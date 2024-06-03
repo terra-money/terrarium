@@ -9,10 +9,9 @@ export default function BlocksPage() {
   const state = useBlocks();
   const data = state.get();
   const gridTemplateColumns = '120px minmax(125px, 1fr) minmax(25px, 0.5fr) minmax(25px, 0.5fr) 75px';
+  const blocksToShow = filter ? data.blocks.filter(({ block } : {block: any}) => block.data.txs!.length > 0) : data.blocks;
 
   const handleToggleFilter = () => setFilter(!filter);
-
-  const getFilteredBlocks = () => data.blocks.filter(({ block } : {block: any}) => block.data.txs!.length > 0);
 
   const toggleEventDetails = useCallback((index: number) => {
     state.blocks[index].merge({
@@ -45,10 +44,11 @@ export default function BlocksPage() {
         <div />
       </div>
       <Virtuoso
-        followOutput
+        followOutput="smooth"
         className="flex flex-col w-full scrollbar"
-        style={{ overflow: 'overlay' }}
-        data={filter ? getFilteredBlocks() : data.blocks}
+        totalCount={blocksToShow.length}
+        initialTopMostItemIndex={blocksToShow.length - 1}
+        data={blocksToShow}
         itemContent={(index, block) => (
           <BlockView
             onToggleEventDetails={toggleEventDetails}
